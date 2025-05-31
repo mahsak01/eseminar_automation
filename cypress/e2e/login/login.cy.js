@@ -1,58 +1,52 @@
-import LoginPage from '../../pages/LoginPage';
-import LandingPage from "../../pages/LandingPage";
-import loginPage from "../../pages/LoginPage";
+import LoginPage from '../pages/LoginPage';
+import DashboardPage from '../pages/DashboardPage';
+import LandingPage from '../pages/LandingPage';
 
-describe('Login tests on eseminar.tv', () => {
+describe('ISeminar Frontend Login and Transactions Test', () => {
+
     beforeEach(() => {
         cy.fixture('users').as('users');
-    });
-
-    it('should login with valid credentials', function () {
-        const {email, password} = this.users.validUser;
 
         LandingPage.openHomePage();
         LandingPage.clickEnterButton();
         LoginPage.assertUrlIs();
-        LoginPage.fillEmail(email);
-        LoginPage.fillPassword(password);
-        LoginPage.submit();
+    });
 
+    it('Verify that user is on the login page', () => {
+        LoginPage.assertUrlIs();
     });
 
     it('should not login with wrong email', function () {
         const {email, password} = this.users.wrongEmail;
-
-        LandingPage.openHomePage();
-        LandingPage.clickEnterButton();
-        LoginPage.assertUrlIs();
         LoginPage.fillEmail(email);
         LoginPage.fillPassword(password);
         LoginPage.submit();
-        loginPage.assertErrorUserNotFound();
-
+        LoginPage.assertErrorUserNotFound();
     });
 
     it('should not login with wrong password', function () {
         const {email, password} = this.users.wrongPassword;
-
-        LandingPage.openHomePage();
-        LandingPage.clickEnterButton();
-        LoginPage.assertUrlIs();
         LoginPage.fillEmail(email);
         LoginPage.fillPassword(password);
         LoginPage.submit();
-        loginPage.assertErrorInvalidCredentials();
-
+        LoginPage.assertErrorInvalidCredentials();
     });
 
     it('should show validation errors for empty fields', function () {
 
-        LandingPage.openHomePage();
-        LandingPage.clickEnterButton();
-        LoginPage.assertUrlIs();
         LoginPage.submit();
         LoginPage.assertErrorRequiredEmail();
         LoginPage.assertErrorRequiredPassword();
-
     });
+
+
+    it('Verify user is on dashboard after login', () => {
+        const {email, password} = this.users.validUser;
+
+        LoginPage.fillEmail(email);
+        LoginPage.fillPassword(password);
+        LoginPage.submit();
+        DashboardPage.assertIsOnDashboard();
+    });
+
 });

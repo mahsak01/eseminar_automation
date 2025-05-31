@@ -1,6 +1,6 @@
 class LoginPage {
     visit() {
-        cy.visit('https://eseminar.tv/login');
+        cy.visit('/login');
     }
 
     fillEmail(email) {
