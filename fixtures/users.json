@@ -1,0 +1,18 @@
+{
+  "validUser": {
+    "email": "mah8069sa@gmail.com",
+    "password": "mahsa8069"
+  },
+  "wrongEmail": {
+    "email": "wrong@example.com",
+    "password": "mahsa8069"
+  },
+  "wrongPassword": {
+    "email": "mah8069sa@gmail.com",
+    "password": "wrongPassword"
+  },
+  "emptyFields": {
+    "email": "",
+    "password": ""
+  }
+}
