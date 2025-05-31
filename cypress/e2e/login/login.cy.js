@@ -1,5 +1,6 @@
 import LoginPage from '../../pages/LoginPage';
 import LandingPage from "../../pages/LandingPage";
+import loginPage from "../../pages/LoginPage";
 
 describe('Login tests on eseminar.tv', () => {
     beforeEach(() => {
@@ -7,7 +8,7 @@ describe('Login tests on eseminar.tv', () => {
     });
 
     it('should login with valid credentials', function () {
-        const { email, password } = this.users.validUser;
+        const {email, password} = this.users.validUser;
 
         LandingPage.openHomePage();
         LandingPage.clickEnterButton();
@@ -19,7 +20,7 @@ describe('Login tests on eseminar.tv', () => {
     });
 
     it('should not login with wrong email', function () {
-        const { email, password } = this.users.wrongEmail;
+        const {email, password} = this.users.wrongEmail;
 
         LandingPage.openHomePage();
         LandingPage.clickEnterButton();
@@ -27,11 +28,12 @@ describe('Login tests on eseminar.tv', () => {
         LoginPage.fillEmail(email);
         LoginPage.fillPassword(password);
         LoginPage.submit();
+        loginPage.assertErrorUserNotFound();
 
     });
 
     it('should not login with wrong password', function () {
-        const { email, password } = this.users.wrongPassword;
+        const {email, password} = this.users.wrongPassword;
 
         LandingPage.openHomePage();
         LandingPage.clickEnterButton();
@@ -39,17 +41,18 @@ describe('Login tests on eseminar.tv', () => {
         LoginPage.fillEmail(email);
         LoginPage.fillPassword(password);
         LoginPage.submit();
+        loginPage.assertErrorInvalidCredentials();
+
     });
 
     it('should show validation errors for empty fields', function () {
-        const { email, password } = this.users.emptyFields;
 
         LandingPage.openHomePage();
         LandingPage.clickEnterButton();
         LoginPage.assertUrlIs();
-        LoginPage.fillEmail(email);
-        LoginPage.fillPassword(password);
         LoginPage.submit();
+        LoginPage.assertErrorRequiredEmail();
+        LoginPage.assertErrorRequiredPassword();
 
     });
 });
