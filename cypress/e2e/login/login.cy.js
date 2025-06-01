@@ -1,6 +1,6 @@
-import LoginPage from '../pages/LoginPage';
-import DashboardPage from '../pages/DashboardPage';
-import LandingPage from '../pages/LandingPage';
+import LoginPage from '../../pages/LoginPage';
+import DashboardPage from '../../pages/DashboardPage';
+import LandingPage from '../../pages/LandingPage';
 
 describe('ISeminar Frontend Login and Transactions Test', () => {
 
@@ -39,14 +39,13 @@ describe('ISeminar Frontend Login and Transactions Test', () => {
         LoginPage.assertErrorRequiredPassword();
     });
 
-
-    it('Verify user is on dashboard after login', () => {
+    it('Verify user is on dashboard after login', function () {
         const {email, password} = this.users.validUser;
-
         LoginPage.fillEmail(email);
         LoginPage.fillPassword(password);
         LoginPage.submit();
         DashboardPage.assertIsOnDashboard();
+
     });
 
 });

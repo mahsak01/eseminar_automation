@@ -14,7 +14,6 @@ class LoginPage {
     submit() {
         cy.contains('button[type="submit"]', 'ورود').click();
         cy.wait(100);
-
     }
 
     assertUrlIs() {
