@@ -14,29 +14,16 @@ class DashboardPage {
     }
 
     selectFirstTransaction() {
-        // انتخاب اولین ردیف تراکنش در tbody
         return cy.get('table.es__table tbody tr').first().as('selectedTransaction');
     }
 
-    interceptTransactionApi(transactionId) {
-        cy.intercept('GET', `/api/transactions/${transactionId}`, (req) => {
-            req.continue((res) => {
-                cy.wrap(res.body).as('transactionData');
-            });
-        }).as('fetchTransaction');
-    }
-
     openTransactionDetails() {
-        // کلیک روی دکمه "مشاهده جزئیات" داخل ردیف انتخاب شده
         cy.get('@selectedTransaction').find('button.es__btnItem').contains('مشاهده جزئیات').click();
     }
 
     assertLoadingSpinnerVisible() {
         cy.get('div.v-spinner').should('be.visible');
-    }
-
-    waitForTransactionData() {
-        cy.wait('@fetchTransaction');
+        cy.wait(500);
     }
 
     assertLoadingSpinnerNotVisible() {
@@ -46,27 +33,72 @@ class DashboardPage {
     assertTransactionDetailsModalVisible() {
         cy.get('div.modal-dialog.modal-lg').should('be.visible');
     }
+    checkDetailTransaction(detailBody) {
+        // Get the first transaction object from the data array
+        const transaction = detailBody.data[0];
+        // Get the first item in the transaction's items array
+        const item = transaction.items[0];
 
-    assertTransactionDetailsMatchApi() {
-        cy.get('@transactionData').then((data) => {
-            cy.get('.modal-order-id').should('have.text', data.id);
-            cy.get('.modal-customer-name').should('have.text', data.customerName);
-            cy.get('.modal-amount').should('have.text', data.amount.toString());
-            // اگر فیلدهای بیشتر بود اضافه کنید
+        // Check the transaction status text on the page
+        cy.contains('وضعیت:')
+            .parent()
+            .should('contain.text', transaction.status_title);
+
+        // Check the transaction ID or show '----' if null
+        const transactionId = transaction.transaction_id || '----';
+        cy.contains('شماره تراکنش:')
+            .parent()
+            .should('contain.text', transactionId);
+
+        // Check the payment method (in JSON it is the bank field)
+        cy.contains('روش پرداخت:')
+            .parent()
+            .should('contain.text', transaction.bank);
+
+        // Check the payment reference ID or show '----' if null
+        const refId = transaction.ref_id || '----';
+        cy.contains('شناسه پرداخت:')
+            .parent()
+            .should('contain.text', refId);
+
+        // Check the payment gateway (in JSON it is the method field)
+        cy.contains('درگاه پرداخت:')
+            .parent()
+            .should('contain.text', transaction.method);
+
+        // Check the tracking code or show '----' if null
+        const trackingCode = transaction.tracking_code || '----';
+        cy.contains('کد رهگیری:')
+            .parent()
+            .should('contain.text', trackingCode);
+
+        // Check the currency displayed
+        cy.contains('ارز:')
+            .parent()
+            .should('contain.text', transaction.currency);
+
+
+        // Now verify webinar details inside the order detail section
+        cy.get('.es__orderDetailModule-contentItem').within(() => {
+            // Check the webinar title
+            cy.contains('مشخصات وبینار')
+                .parent()
+                .should('contain.text', item.webinar);
+
+            // Check the webinar teacher's name
+            cy.contains('مدرس')
+                .parent()
+                .should('contain.text', item.teacher);
+
+            // Check the price - if zero, display 'رایگان' (Free)
+            const priceText = item.price === 0 ? 'رایگان' : item.price.toString();
+            cy.contains('قیمت')
+                .parent()
+                .should('contain.text', priceText);
         });
     }
 
-    openAndValidateFirstTransactionDetails() {
-        this.selectFirstTransaction().invoke('attr', 'data-id').then((transactionId) => {
-            this.interceptTransactionApi(transactionId);
-            this.openTransactionDetails();
-            this.assertLoadingSpinnerVisible();
-            this.waitForTransactionData();
-            this.assertLoadingSpinnerNotVisible();
-            this.assertTransactionDetailsModalVisible();
-            this.assertTransactionDetailsMatchApi();
-        });
-    }
+
 }
 
 export default new DashboardPage();
